@@ -1,3 +1,7 @@
+from cloudant import Cloudant
+from flask import Flask, render_template, request, jsonify, abort
+import cf_deployment_tracker
+
 from linebot import (
     LineBotApi, WebhookHandler
 )
