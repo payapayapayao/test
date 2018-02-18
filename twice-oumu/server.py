@@ -54,15 +54,33 @@ def callback():
 def handle_message(event):
     language_translator = LanguageTranslator(
         username=LT_NAME,password=LT_PASS)
-    translation = language_translator.translate(
-        text=event.message.text,
-        source='ja',
-        target='en')
-    reply = json.dumps(translation, indent=2, ensure_ascii=False).replace("\"", "")
+
+    language = language_translator.identify(event.message.text)
+    reply_json = json.loads(json.dumps(language, indent=2))
+
+    if reply_json['languages'][0]['language'] == "en":
+        src="en"
+        tgt="ja"
+        language_code="0"
+    elif reply_json['languages'][0]['language'] == "ja":
+        src="ja"
+        tgt="en"
+        language_code="0"
+    else :
+        language_code="1"
+
+    if language_code == "0" :
+        translation = language_translator.translate(
+            text=event.message.text,
+            source=src,
+            target=tgt)
+        reply = json.dumps(translation, indent=2, ensure_ascii=False).replace("\"", "")
+    elif language_code == "1":
+        reply = "日本語か英語を入力してね。文章で入力すると理解しやすいよ！"
+
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=reply))
-
 
 if __name__ == "__main__":
 #     app.run()
